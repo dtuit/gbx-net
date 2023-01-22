@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -107,6 +107,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlocksAndTheirClipsTM2020", "Samples\BlocksAndTheirClipsTM2020\BlocksAndTheirClipsTM2020.csproj", "{2874B9DF-8ACE-4CB5-9005-9C72B8650735}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SolidExtract2", "Samples\SolidExtract2\SolidExtract2.csproj", "{A9EF0F84-8C60-4EFD-8DCC-B70DBEA8C239}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebugGhosts", "DebugGhosts\DebugGhosts.csproj", "{D7562D6C-F4D5-410F-BFA3-72C25DA06D47}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

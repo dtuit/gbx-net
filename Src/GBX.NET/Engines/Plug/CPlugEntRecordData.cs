@@ -1,5 +1,10 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.IO.Compression;
+using System.Text;
+
+using System;
+using System.IO;
 
 namespace GBX.NET.Engines.Plug;
 
@@ -39,12 +44,42 @@ public class CPlugEntRecordData : CMwNod
         
     }
 
+    public void PrintByteArray(byte[] bytes)
+    {
+        var sb = new StringBuilder("new byte[] { ");
+        foreach (var b in bytes)
+        {
+            sb.Append(b + ", ");
+        }
+        sb.Append("}");
+        Console.WriteLine(sb.ToString());
+    }
+
+    public string ByteArrayToString(byte[] bytes)
+    {
+        var sb = new StringBuilder("");
+        foreach (var b in bytes)
+        {
+            sb.Append(b + ", ");
+        }
+        return sb.ToString();
+    }
+
     private ObservableCollection<Sample> ReadSamples(int version)
     {
         if (Data is null)
         {
             throw new Exception();
         }
+
+        string filePath = "C:\\Users\\darren\\code\\gbx-net\\DebugGhosts\\recordbytes_v2_surfacetype_skid.csv";
+        using StreamWriter file = new(filePath);
+
+        //using (StreamWriter writer = new StreamWriter(new FileStream(filepath, FileAccess.Write)))
+        //{
+        //    writer.WriteLine("sep=,");
+        //    writer.WriteLine("Hello, Goodbye");
+        //}
 
         var samples = new ObservableCollection<Sample>();
 
@@ -59,15 +94,21 @@ public class CPlugEntRecordData : CMwNod
             var nodeId = r.ReadUInt32();
             var nodeName = NodeManager.GetName(nodeId);
 
+            var obj_u01 = r.ReadInt32();
+            var obj_u02 = r.ReadInt32();
+            var obj_u03 = r.ReadInt32();
+            var mwbuffer = r.ReadInt32();
+            var obj_u05 = r.ReadInt32();
+
             return new
             {
                 nodeId,
                 nodeName,
-                obj_u01 = r.ReadInt32(),
-                obj_u02 = r.ReadInt32(),
-                obj_u03 = r.ReadInt32(),
-                mwbuffer = r.ReadInt32(),
-                obj_u05 = r.ReadInt32()
+                obj_u01,
+                obj_u02,
+                obj_u03,
+                mwbuffer,
+                obj_u05
             };
         });
 
@@ -95,6 +136,7 @@ public class CPlugEntRecordData : CMwNod
                     clasName
                 };
             });
+            Console.WriteLine("");
         }
 
         var u04 = r.ReadByte();
@@ -118,7 +160,17 @@ public class CPlugEntRecordData : CMwNod
             for (byte x; (x = r.ReadByte()) != 0;)
             {
                 var timestamp = r.ReadInt32();
+                
                 var buffer = r.ReadBytes(); // MwBuffer
+                //Console.WriteLine();
+                
+                //Console.WriteLine($"{timestamp}");
+
+                //Console.WriteLine(Encoding.Default.GetString(buffer));
+
+                PrintByteArray(buffer);
+
+
 
                 if (buffer.Length == 0)
                 {
@@ -156,6 +208,8 @@ public class CPlugEntRecordData : CMwNod
                     case 4:
                     case 6:
                         {
+                            file.WriteLine($"{timestamp},{buffer.Length},{ByteArrayToString(buffer)}");
+
                             bufferMs.Position = 5;
                             var rpmByte = bufferR.ReadByte();
 
@@ -191,6 +245,75 @@ public class CPlugEntRecordData : CMwNod
                             sample.Rotation = rotation;
                             sample.Speed = speed * 3.6f;
                             sample.Velocity = velocity;
+
+                            // ICE
+                            bufferMs.Position = 81;
+                            var FLiceByte = bufferR.ReadByte();
+                            bufferMs.Position = 82;
+                            var FRIceByte = bufferR.ReadByte();
+                            bufferMs.Position = 83;
+                            var BRIceByte = bufferR.ReadByte();
+                            bufferMs.Position = 84;
+                            var BLIceByte = bufferR.ReadByte();
+
+                            sample.FLDirt = FLiceByte / 255f;
+                            sample.FRDirt = FRIceByte / 255f;
+                            sample.BRDirt = BRIceByte / 255f;
+                            sample.BRDirt = BLIceByte / 255f;
+
+                            // DIRT
+                            bufferMs.Position = 93;
+                            var FLDirtByte = bufferR.ReadByte();
+                            bufferMs.Position = 95;
+                            var FRDirtByte = bufferR.ReadByte();
+                            bufferMs.Position = 97;
+                            var BRDirtByte = bufferR.ReadByte();
+                            bufferMs.Position = 99;
+                            var BLDirtByte = bufferR.ReadByte();
+
+                            sample.FLDirt = FLDirtByte / 255f;
+                            sample.FRDirt = FRDirtByte / 255f;
+                            sample.BRDirt = BRDirtByte / 255f;
+                            sample.BRDirt = BLDirtByte / 255f;
+
+                            // GroundContactMaterial
+                            bufferMs.Position = 24;
+                            var FLGroundContactMaterialByte = bufferR.ReadByte();
+                            bufferMs.Position = 26;
+                            var FRGroundContactMaterialByte = bufferR.ReadByte();
+                            bufferMs.Position = 28;
+                            var BLGroundContactMaterialByte = bufferR.ReadByte();
+                            bufferMs.Position = 30;
+                            var BRGroundContactMaterialByte = bufferR.ReadByte();
+
+                            sample.FLGroundContactMaterial = (EPlugSurfaceMaterialId)FLGroundContactMaterialByte;
+                            sample.FRGroundContactMaterial = (EPlugSurfaceMaterialId)FRGroundContactMaterialByte;
+                            sample.BLGroundContactMaterial = (EPlugSurfaceMaterialId)BLGroundContactMaterialByte;
+                            sample.BRGroundContactMaterial = (EPlugSurfaceMaterialId)BRGroundContactMaterialByte;
+
+                            // Water
+                            bufferMs.Position = 101;
+                            var waterByte = bufferR.ReadByte();
+
+                            sample.WetnessValue = waterByte / 255f;
+
+
+                            // IsGroundContact, IsReactorGroundMode
+                            bufferMs.Position = 89;
+                            var groundModeByte = bufferR.ReadByte();
+                            
+                            sample.IsGroundContact = groundModeByte == 1;
+                            sample.IsReactorGroundMode = groundModeByte == 3;
+
+
+                            // Slip?
+                            bufferMs.Position = 32;
+                            var slipCoefTest = bufferR.ReadUInt16();
+                            Console.WriteLine(slipCoefTest);
+                            bufferMs.Position = 33;
+                            bufferMs.Position = 34;
+
+                            Console.WriteLine($"5:1 RPM {rpmByte} 14:1 Steer {steerByte}-{steer} 91:1 Gear {gearByte}-{gear} 15:1 u15 {u15} 18:1 brake/gas {brakeByte}-{brake}/{gas} 47:22 prsv {position}-{rotation}-{speed}-{velocity}");
 
                             break;
                         }
