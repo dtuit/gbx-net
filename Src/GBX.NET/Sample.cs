@@ -83,8 +83,23 @@ public enum EPlugSurfaceMaterialId : byte
     Plastic,
     DevDebug,
     Free3,
-    XXX_Null,
+    XXX_Null
 }
+
+public enum ESceneVehicleVisReactorBoostType : int {
+    None,
+    Up,
+    Down,
+    UpAndDown
+}
+
+public enum ESceneVehicleVisReactorBoostLvl : int {
+    None,
+    Lvl1,
+    Lvl2
+}
+
+
 
 public class Sample
 {
@@ -106,22 +121,52 @@ public class Sample
 
     public float FLIcing { get; set; }
     public float FRIcing { get; set; }
-    public float BLIcing { get; set; }
-    public float BRIcing { get; set; }
+    public float RLIcing { get; set; }
+    public float RRIcing { get; set; }
 
     public float FLDirt { get; set; }
     public float FRDirt { get; set; }
-    public float BLDirt { get; set; }
-    public float BRDirt { get; set; }
+    public float RLDirt { get; set; }
+    public float RRDirt { get; set; }
 
     public EPlugSurfaceMaterialId FLGroundContactMaterial { get; set; }
     public EPlugSurfaceMaterialId FRGroundContactMaterial { get; set; }
-    public EPlugSurfaceMaterialId BLGroundContactMaterial { get; set; }
-    public EPlugSurfaceMaterialId BRGroundContactMaterial { get; set; }
+    public EPlugSurfaceMaterialId RLGroundContactMaterial { get; set; }
+    public EPlugSurfaceMaterialId RRGroundContactMaterial { get; set; }
+
+    public float FLDampenLen { get; set; }
+    public float FRDampenLen { get; set; }
+    public float RLDampenLen { get; set; }
+    public float RRDampenLen { get; set; }
+
+    public bool FLSlipCoef { get; set; }
+    public bool FRSlipCoef { get; set; }
+    public bool RLSlipCoef { get; set; }
+    public bool RRSlipCoef { get; set; }
 
     public float WetnessValue { get; set; }
     public bool IsGroundContact { get; set; }
     public bool IsReactorGroundMode { get; set; }
+
+    public ESceneVehicleVisReactorBoostLvl ReactorBoostLvl { get; set; }
+    public ESceneVehicleVisReactorBoostType ReactorBoostType { get; set; }
+
+    public int ReactorAirControlSteer { get; set; }
+    public int ReactorAirControlPedal { get; set; }
+
+    public bool IsTurbo { get; set; }
+    public float TurboTime { get; set; }
+
+    public float SimulationTimeCoef { get; set; }
+
+    public float FLWheelRot { get; set; }
+    public float FRWheelRot { get; set; }
+    public float RLWheelRot { get; set; }
+    public float RRWheelRot { get; set; }
+    
+    public float FLSteerAngle { get; set; }
+    public float SideSpeed { get; set; }
+    public bool IsTopContact { get; set; }
 
     public Sample(byte[] data)
     {
