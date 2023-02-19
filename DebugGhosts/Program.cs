@@ -88,18 +88,24 @@ string ByteArrayToString(byte[] bytes)
 
 //var filepath = "C:\\Users\\darren\\Documents\\Trackmania\\Replays\\My Replays\\WheelStateTest_SideSpeed_AND_TopContact.Replay.Gbx";
 
-//var filepath = "C:\\Users\\darren\\Documents\\Trackmania\\Replays\\My Replays\\WheelStateTest_BoostAndSpin.Replay.Gbx";
+var filepath = "C:\\Users\\darren\\Documents\\Trackmania\\Replays\\My Replays\\WheelStateTest_BoostAndSpin.Replay.Gbx";
 
 //var filepath = "C:\\Users\\darren\\Documents\\Trackmania\\Replays\\My Replays\\WheelStateTest_CameraChangeQ.Gbx";
 
-var filepath = "C:\\Users\\darren\\Documents\\TmForever\\Tracks\\Replays\\Autosaves\\darren_A05-Race.Replay.gbx";
+//var filepath = "C:\\Users\\darren\\Documents\\TmForever\\Tracks\\Replays\\Autosaves\\darren_A05-Race.Replay.gbx";
 
 var replay = GameBox.Parse<CGameCtnReplayRecord>(filepath);
+
+//var ghosts = (List<CGameCtnGhost>)replay.Node.GetGhosts();
+//var samples = ghosts?[0].RecordData?.Samples;
+
+var samples = replay.Node?.Ghosts?.First()?.RecordData?.Samples;
+    
 //var samples = replay.Node.Ghosts[0].SampleData.Samples;
-var samples = replay.Node.Ghosts[0].RecordData.Samples;
+//var samples = replay.Node?.Ghosts?[0].RecordData.Samples;
 
 string fileName = Path.GetFileNameWithoutExtension(filepath);
-string outfilePath = $"C:\\Users\\darren\\code\\gbx-net-ghostdebug-data\\{fileName}_2.csv";
+string outfilePath = $"C:\\Users\\darren\\code\\gbx-net-ghostdebug-data\\{fileName}_3.csv";
 
 using StreamWriter file = new(outfilePath);
 
